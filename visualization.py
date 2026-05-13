@@ -12,6 +12,8 @@ from config import SimParams
 
 
 def set_style():
+    plt.rcParams['font.sans-serif'] = ['Noto Sans CJK SC', 'SimHei', 'Microsoft YaHei', 'DejaVu Sans']
+    plt.rcParams['axes.unicode_minus'] = False
     plt.rcParams.update({
         "figure.figsize": (12, 6),
         "figure.dpi": 100,
