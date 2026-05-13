@@ -1,7 +1,3 @@
-"""
-可视化工具函数
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -12,8 +8,6 @@ from config import SimParams
 
 
 def set_style():
-    plt.rcParams['font.sans-serif'] = ['Noto Sans CJK SC', 'SimHei', 'Microsoft YaHei', 'DejaVu Sans']
-    plt.rcParams['axes.unicode_minus'] = False
     plt.rcParams.update({
         "figure.figsize": (12, 6),
         "figure.dpi": 100,
@@ -31,14 +25,14 @@ def plot_potential_and_wavepacket(p: SimParams, potential_name: str, psi=None):
     x = p.x
     V_real = np.real(get_potential(x, p, potential_name, with_cap=False))
     fig, ax = plt.subplots()
-    ax.plot(x, V_real, "k-", linewidth=2, label=f"V(x) — {potential_name}")
+    ax.plot(x, V_real, "k-", linewidth=2, label=f"V(x) - {potential_name}")
     ax.axhline(p.E_kinetic, color="r", linestyle="--", label=f"E_kin = {p.E_kinetic:.2f}")
     if psi is not None:
         rho = np.abs(psi) ** 2
-        ax.fill_between(x, 0, rho * p.V0 / rho.max() * 0.8, alpha=0.4, label="|ψ|²")
+        ax.fill_between(x, 0, rho * p.V0 / rho.max() * 0.8, alpha=0.4, label="|psi|^2")
     ax.set_xlabel("x")
-    ax.set_ylabel("V(x) / |ψ|²")
-    ax.set_title(f"势垒与初始波包 — {potential_name}")
+    ax.set_ylabel("V(x) / |psi|^2")
+    ax.set_title(f"Potential and Initial Wavepacket - {potential_name}")
     ax.legend()
     ax.set_xlim(p.x_min + p.cap_width, p.x_max - p.cap_width)
     plt.tight_layout()
@@ -62,7 +56,7 @@ def animate_evolution(result: PropagationResult, x_range=None, interval=30):
     rho0 = result.prob_densities[0][mask]
     rho_max = max(rho_max_i.max() for rho_max_i in result.prob_densities) * 1.1
 
-    line, = ax1.plot([], [], "b-", linewidth=1.2, label="|ψ(x,t)|²")
+    line, = ax1.plot([], [], "b-", linewidth=1.2, label="|psi(x,t)|^2")
     fill = ax1.fill_between(x_plot, 0, rho0, alpha=0.3, color="blue")
     potential_line, = ax1.plot(x_plot, V_plot / max(V_plot.max(), 1) * rho_max * 0.5, "k-", linewidth=2, label="V(x) (scaled)")
 
@@ -70,7 +64,7 @@ def animate_evolution(result: PropagationResult, x_range=None, interval=30):
     ax1.set_xlim(x_range)
     ax1.set_ylim(0, rho_max)
     ax1.set_xlabel("x")
-    ax1.set_ylabel("|ψ|²")
+    ax1.set_ylabel("|psi|^2")
     ax1.legend(loc="upper right")
     title = ax1.set_title("")
 
@@ -99,7 +93,7 @@ def animate_evolution(result: PropagationResult, x_range=None, interval=30):
         fill = ax1.fill_between(x_plot, 0, rho, alpha=0.3, color="blue")
 
         t = result.times[frame]
-        title.set_text(f"{result.potential_name} — t = {t:.3f},  T = {result.T_values[frame]:.4f},  R = {result.R_values[frame]:.4f}")
+        title.set_text(f"{result.potential_name} - t = {t:.3f},  T = {result.T_values[frame]:.4f},  R = {result.R_values[frame]:.4f}")
 
         marker_T.set_data([t], [result.T_values[frame]])
         marker_R.set_data([t], [result.R_values[frame]])
@@ -122,13 +116,13 @@ def plot_TR_evolution(result: PropagationResult):
     ax1.plot(result.times, result.T_values + result.R_values, "k--", alpha=0.5, label="T+R")
     ax1.set_xlabel("t")
     ax1.set_ylabel("Probability")
-    ax1.set_title(f"透射率/反射率演化 — {result.potential_name}")
+    ax1.set_title(f"Transmission/Reflection Evolution - {result.potential_name}")
     ax1.legend()
 
     ax2.plot(result.times, result.norm_values, "b-", linewidth=2)
     ax2.set_xlabel("t")
-    ax2.set_ylabel("∫|ψ|²dx")
-    ax2.set_title("概率守恒检验")
+    ax2.set_ylabel("int|psi|^2 dx")
+    ax2.set_title("Norm Conservation Check")
     ax2.axhline(1.0, color="k", linestyle="--", alpha=0.5)
 
     plt.tight_layout()
@@ -151,11 +145,11 @@ def plot_momentum_spectrum(result: PropagationResult, k_range=(-15, 15)):
         spec_norm = spec / spec.max() if spec.max() > 0 else spec
         ax.plot(k_plot, spec_norm, label=f"t = {result.times[idx]:.2f}")
 
-    ax.axvline(p.k0, color="k", linestyle="--", alpha=0.5, label=f"k₀ = {p.k0}")
-    ax.axvline(-p.k0, color="k", linestyle=":", alpha=0.5, label=f"-k₀ = {-p.k0}")
+    ax.axvline(p.k0, color="k", linestyle="--", alpha=0.5, label=f"k_0 = {p.k0}")
+    ax.axvline(-p.k0, color="k", linestyle=":", alpha=0.5, label=f"-k_0 = {-p.k0}")
     ax.set_xlabel("k")
-    ax.set_ylabel("|ψ̃(k)|² (normalized)")
-    ax.set_title(f"动量谱演化 — {result.potential_name}")
+    ax.set_ylabel("|psi(k)|^2 (normalized)")
+    ax.set_title(f"Momentum Spectrum Evolution - {result.potential_name}")
     ax.legend()
     plt.tight_layout()
     return fig
@@ -188,7 +182,7 @@ def plot_snapshots(result: PropagationResult, n_snapshots=6, x_range=None):
         ax.plot(x_plot, rho, "b-", linewidth=1)
         ax.plot(x_plot, V_plot / max(V_plot.max(), 1) * rho_max * 0.5, "k-", linewidth=1.5)
         ax.axhline(p.E_kinetic / max(V_plot.max(), 1) * rho_max * 0.5, color="r", linestyle="--", alpha=0.4)
-        ax.set_ylabel("|ψ|²")
+        ax.set_ylabel("|psi|^2")
         ax.set_ylim(0, rho_max)
         ax.set_title(f"t = {result.times[idx]:.3f},  T = {result.T_values[idx]:.4f},  R = {result.R_values[idx]:.4f}")
 
@@ -212,7 +206,7 @@ def plot_eckart_comparison(result: PropagationResult):
     ax.plot(p.E_kinetic, T_numerical, "ro", markersize=10, label=f"Numerical T = {T_numerical:.4f}")
     ax.set_xlabel("E")
     ax.set_ylabel("T(E)")
-    ax.set_title("Eckart 势透射系数 — 解析 vs 数值")
+    ax.set_title("Eckart Barrier: Analytical vs Numerical")
     ax.legend()
     plt.tight_layout()
     return fig
@@ -228,11 +222,11 @@ def plot_three_barriers_comparison(results: list):
         axes[1, 0].plot(res.times, res.T_values + res.R_values, linewidth=2, label=name)
         axes[1, 1].plot(res.times, res.norm_values, linewidth=2, label=name)
 
-    axes[0, 0].set_title("透射率 T(t)")
+    axes[0, 0].set_title("Transmission T(t)")
     axes[0, 0].set_ylabel("T")
     axes[0, 0].legend()
 
-    axes[0, 1].set_title("反射率 R(t)")
+    axes[0, 1].set_title("Reflection R(t)")
     axes[0, 1].set_ylabel("R")
     axes[0, 1].legend()
 
@@ -241,7 +235,7 @@ def plot_three_barriers_comparison(results: list):
     axes[1, 0].set_ylabel("T + R")
     axes[1, 0].legend()
 
-    axes[1, 1].set_title("概率守恒 ∫|ψ|²dx")
+    axes[1, 1].set_title("Norm Conservation int|psi|^2 dx")
     axes[1, 1].set_xlabel("t")
     axes[1, 1].set_ylabel("Norm")
     axes[1, 1].axhline(1.0, color="k", linestyle="--", alpha=0.5)
