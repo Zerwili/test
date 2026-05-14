@@ -6,7 +6,7 @@
 
 点击下方链接即可在浏览器中运行，无需安装任何环境：
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/<你的用户名>/<仓库名>/HEAD)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/<Zerwili>/<test>/HEAD)
 
 ## 本地运行
 
